@@ -15,10 +15,12 @@
         </ul>
         <ul class="navbar-nav">
             {% if request.user.profile.photo %}
-            <a href="{% url 'blog:edit_profile' %}"><img src="{{ request.user.profile.photo.url }}" alt="" class="navbar-img">Hi {{ request.user|capfirst }}</a> {% else %}
-            <a href="{% url 'blog:edit_profile' %}"><img src="/media/default-avatar.png" alt="" class="navbar-img">Hi {{ request.user|capfirst }}</a> {% endif %}
-            <a href="{% url 'blog:post_create' %}">Post Create</a>
-            <a href="{% url 'user_logout' %}">Logout</a>{% endif %}
+            <a href="{% url 'blog:edit_profile' %}"><button type="button" class="btn btn-outline-primary btn-rounded waves-effect"><img src="{{ request.user.profile.photo.url }}" alt="" height="20" width="20">   Hi {{ request.user|capfirst }}
+            </button></a> {% else %}
+            <a href="{% url 'blog:edit_profile' %}"><button type="button" class="btn btn-outline-primary btn-rounded waves-effect"><img src="/media/default-avatar.png" alt="" height="20" width="20">Hi {{ request.user|capfirst }}
+            </button></a> {% endif %}
+            <a href="{% url 'blog:post_create' %}"><button type="button" class="btn btn-outline-secondary btn-rounded waves-effect"><i class="fas fa-plus-circle">Post Create</i></button></a>
+            <a href="{% url 'user_logout' %}"><button type="button" class="btn btn-outline-danger btn-rounded waves-effect"><i class="fas fa-power-off">Logout</i></button></a>{% endif %}
         </ul>
     </div>
 </nav>
