@@ -16,7 +16,7 @@ from django.forms import modelformset_factory
 from django.contrib import messages
 
 
-# Create your views here.
+@login_required(login_url="user_login")
 def post_list(request):
     post_list = Post.published.all()
     query = request.GET.get('q')
@@ -49,6 +49,7 @@ def post_list(request):
     }
     return render(request, 'blog/post_list.html', context)
 
+@login_required(login_url="user_login")
 def proper_pagination(posts, index):
     start_index = 0
     end_index = 7
@@ -57,7 +58,7 @@ def proper_pagination(posts, index):
         end_index = start_index + end_index
     return (start_index, end_index)
 
-
+@login_required(login_url="user_login")
 def post_detail(request, id, slug):
     post = get_object_or_404(Post, id=id, slug=slug)
     comments = Comment.objects.filter(post=post, reply=None).order_by('-id')
@@ -97,6 +98,7 @@ def post_detail(request, id, slug):
 
     return render(request, 'blog/post_detail.html', context)
 
+
 def post_favourite_list(request):
     user = request.user
     favourite_posts = user.favourite.all()
@@ -113,7 +115,7 @@ def favourite_post(request, id):
         post.favourite.add(request.user)
     return HttpResponseRedirect(post.get_absolute_url())
 
-
+@login_required(login_url="user_login")
 def like_post(request):
     # post = get_object_or_404(Post, id=request.POST.get('post_id'))
     post = get_object_or_404(Post, id=request.POST.get('id'))
@@ -134,7 +136,7 @@ def like_post(request):
         return JsonResponse({'form': html})
 
 
-
+@login_required(login_url="user_login")
 def post_create(request):
     ImageFormset = modelformset_factory(Images, fields=('image',), extra=4)
     if request.method == 'POST':
@@ -163,6 +165,7 @@ def post_create(request):
     }
     return render(request, 'blog/post_create.html', context)
 
+@login_required(login_url="user_login")
 def post_edit(request, id):
     post = get_object_or_404(Post, id=id)
     ImageFormset = modelformset_factory(Images, fields=('image',), extra=4, max_num=4)
@@ -200,9 +203,7 @@ def post_edit(request, id):
     }
     return render(request, 'blog/post_edit.html', context)
 
-
-
-
+@login_required(login_url="user_login")
 def post_delete(request, id):
     post = get_object_or_404(Post, id=id)
     if request.user != post.author:
@@ -211,7 +212,25 @@ def post_delete(request, id):
     messages.warning(request, 'post has been successfully deleted!')
     return redirect('post_list')
 
+@login_required(login_url="user_login")
+def edit_profile(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(data=request.POST or None, instance=request.user)
+        profile_form = ProfileEditForm(data=request.POST or None, instance=request.user.profile, files=request.FILES)
+        if user_form.is_valid() and profile_form.is_valid():
+            print(profile_form)
+            user_form.save()
+            profile_form.save()
+            return HttpResponseRedirect(reverse("blog:edit_profile"))
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(instance=request.user.profile)
 
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+    return render(request, 'blog/edit_profile.html', context)
 
 
 def user_login(request):
@@ -237,11 +256,9 @@ def user_login(request):
     }
     return render(request, 'blog/login.html', context)
 
-
 def user_logout(request):
     logout(request)
     return redirect('post_list')
-
 
 def register(request):
     if request.method == 'POST':
@@ -258,24 +275,3 @@ def register(request):
         'form': form,
     }
     return render(request, 'registration/register.html', context)
-
-
-@login_required
-def edit_profile(request):
-    if request.method == 'POST':
-        user_form = UserEditForm(data=request.POST or None, instance=request.user)
-        profile_form = ProfileEditForm(data=request.POST or None, instance=request.user.profile, files=request.FILES)
-        if user_form.is_valid() and profile_form.is_valid():
-            print(profile_form)
-            user_form.save()
-            profile_form.save()
-            return HttpResponseRedirect(reverse("blog:edit_profile"))
-    else:
-        user_form = UserEditForm(instance=request.user)
-        profile_form = ProfileEditForm(instance=request.user.profile)
-
-    context = {
-        'user_form': user_form,
-        'profile_form': profile_form,
-    }
-    return render(request, 'blog/edit_profile.html', context)

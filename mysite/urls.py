@@ -29,13 +29,6 @@ urlpatterns = [
     url(r'^login/$', views.user_login, name="user_login"),
     url(r'^logout/$', views.user_logout, name="user_logout"),
     url(r'^register/$', views.register, name="register"),
-
-    # Password Reset Url's
-    # url(r'^password-reset/$', auth_views.password_reset, name="password_reset"),
-    # url(r'^password-reset/done/$', auth_views.password_reset_done, name="password_reset_done"),
-    # url(r'^password-reset/confirm/(?P<uidb64>[\w-]+)/(?P<token>[\w-]+)/$', auth_views.password_reset_confirm, name="password_reset_confirm"),
-    # url(r'^password-reset/complete/$', auth_views.password_reset_complete, name="password_reset_complete"),
-
     url(r'^', include('django.contrib.auth.urls')),
     url(r'^oauth/', include('social_django.urls', namespace="social")),
     url(r'^like/', views.like_post, name="like_post"),
