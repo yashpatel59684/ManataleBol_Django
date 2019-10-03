@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import ModelForm,TextInput
 from .models import Post, Profile, Comment
 from django.contrib.auth.models import User
 
@@ -24,13 +25,13 @@ class PostEditForm(forms.ModelForm):
 
 
 class UserLoginForm(forms.Form):
-    username = forms.CharField(label="")
-    password = forms.CharField(label="", widget=forms.PasswordInput)
+    username = forms.CharField(label="",widget=forms.TextInput(attrs={'class': "form-control",'placeholder':"Enter Your UserName"}))
+    password = forms.CharField(label="", widget=forms.PasswordInput(attrs={'class': "form-control",'placeholder':"Enter Your Password  "}))
 
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget = forms.PasswordInput(attrs = {'placeholder':'Enter Password Here...'}))
-    confirm_password = forms.CharField(widget = forms.PasswordInput(attrs = {'placeholder':'Confirm Password...'}))
+    password = forms.CharField(widget = forms.PasswordInput(attrs = {'class': "form-control"}))
+    confirm_password = forms.CharField(widget = forms.PasswordInput(attrs = {'class': "form-control"}))
     class Meta:
         model = User
         fields = (
@@ -39,6 +40,11 @@ class UserRegistrationForm(forms.ModelForm):
             'last_name',
             'email',
         )
+        widgets={'username':TextInput(attrs={'class':"form-control"}),
+        'first_name':TextInput(attrs={'class':"form-control"}),
+        'last_name':TextInput(attrs={'class':"form-control"}),
+        'email':TextInput(attrs={'class':"form-control"}),
+        }
 
     def clean_confirm_password(self):
         password = self.cleaned_data.get('password')
