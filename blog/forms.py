@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm,TextInput
+from django.forms import ModelForm,TextInput,EmailInput
 from .models import Post, Profile, Comment
 from django.contrib.auth.models import User
 
@@ -40,10 +40,10 @@ class UserRegistrationForm(forms.ModelForm):
             'last_name',
             'email',
         )
-        widgets={'username':TextInput(attrs={'class':"form-control"}),
-        'first_name':TextInput(attrs={'class':"form-control"}),
-        'last_name':TextInput(attrs={'class':"form-control"}),
-        'email':TextInput(attrs={'class':"form-control"}),
+        widgets={'username':TextInput(attrs={'class':"form-control",'required':"true"}),
+        'first_name':TextInput(attrs={'class':"form-control",'required':"true"}),
+        'last_name':TextInput(attrs={'class':"form-control",'required':"true"}),
+        'email':EmailInput(attrs={'class':"form-control",'required':"true"}),
         }
 
     def clean_confirm_password(self):

@@ -245,9 +245,9 @@ def user_login(request):
                     login(request, user)
                     return HttpResponseRedirect(reverse('post_list'))
                 else:
-                    return HttpResponse("User is not active")
+                    messages.warning(request, 'User is not active!')
             else:
-                return HttpResponse("User is None")
+                messages.warning(request, 'Invalid Username or password!')
     else:
         form = UserLoginForm()
 
