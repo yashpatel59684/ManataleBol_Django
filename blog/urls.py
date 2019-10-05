@@ -1,5 +1,7 @@
 from django.conf.urls import url
 from blog import views
+from django.conf import settings
+from django.conf.urls.static import static
 app_name="blog"
 urlpatterns = [
     url(r'(?P<id>\d+)/post_edit/$', views.post_edit, name="post_edit"),
@@ -8,5 +10,6 @@ urlpatterns = [
     url(r'(?P<id>\d+)/(?P<slug>[\w-]+)/$', views.post_detail, name="post_detail"),
     url(r'post_create/$', views.post_create, name="post_create"),
     url(r'edit_profile/$', views.edit_profile, name="edit_profile"),
-    url(r'favourites/$', views.post_favourite_list, name="post_favourite_list"),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
