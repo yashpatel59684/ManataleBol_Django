@@ -98,23 +98,6 @@ def post_detail(request, id, slug):
 
     return render(request, 'blog/post_detail.html', context)
 
-
-def post_favourite_list(request):
-    user = request.user
-    favourite_posts = user.favourite.all()
-    context = {
-        'favourite_posts': favourite_posts,
-    }
-    return render(request, 'blog/post_favourite_list.html', context)
-
-def favourite_post(request, id):
-    post = get_object_or_404(Post, id=id)
-    if post.favourite.filter(id=request.user.id).exists():
-        post.favourite.remove(request.user)
-    else:
-        post.favourite.add(request.user)
-    return HttpResponseRedirect(post.get_absolute_url())
-
 @login_required(login_url="user_login")
 def like_post(request):
     # post = get_object_or_404(Post, id=request.POST.get('post_id'))
@@ -138,7 +121,7 @@ def like_post(request):
 
 @login_required(login_url="user_login")
 def post_create(request):
-    ImageFormset = modelformset_factory(Images, fields=('image',), extra=4)
+    ImageFormset = modelformset_factory(Images, fields=('image',), extra=10)
     if request.method == 'POST':
         form = PostCreateForm(request.POST)
         formset = ImageFormset(request.POST or None, request.FILES or None)
@@ -168,7 +151,7 @@ def post_create(request):
 @login_required(login_url="user_login")
 def post_edit(request, id):
     post = get_object_or_404(Post, id=id)
-    ImageFormset = modelformset_factory(Images, fields=('image',), extra=4, max_num=4)
+    ImageFormset = modelformset_factory(Images, fields=('image',), extra=10, max_num=10)
     if post.author != request.user:
         raise Http404()
     if request.method == "POST":
