@@ -35,21 +35,11 @@ def post_list(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
-    if page is None:
-        start_index = 0
-        end_index = 7
-    else:
-        (start_index, end_index) = proper_pagination(posts, index=4)
-
-    page_range = list(paginator.page_range)[start_index:end_index]
-
     context = {
         'posts': posts,
-        'page_range': page_range,
     }
     return render(request, 'blog/post_list.html', context)
 
-@login_required(login_url="user_login")
 def proper_pagination(posts, index):
     start_index = 0
     end_index = 7
