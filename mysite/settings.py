@@ -7,6 +7,7 @@ ALLOWED_HOSTS = ['*']
 X_FRAME_OPTIONS = 'ALLOW ALL'
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django_admin_shell',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

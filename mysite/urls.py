@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^logout/$', views.user_logout, name="user_logout"),
     url(r'^register/$', views.register, name="register"),
     url(r'^', include('django.contrib.auth.urls')),
+    url(r'^admin/shell/', include('django_admin_shell.urls')),
     url(r'^like/', views.like_post, name="like_post"),
 ]
 if settings.DEBUG:
