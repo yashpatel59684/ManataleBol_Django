@@ -1,45 +1,46 @@
 {% extends 'blog/base.html' %} {% block title %}Welcome to {{ block.super }}{% endblock %} {% block content %} {% include 'blog/alerts.html' %}
-
-
 <div class="row d-flex justify-content-center">
     {% for p in posts %}
     <div class="col-md-8">
         <div class="img-thumbnail">
             {{ p.author|capfirst }}&nbsp;&nbsp;&nbsp;<a href="{{ p.get_absolute_url }}">{{ p.title }}<br>
                 <div class="row gallery">
-                {% for image in pic.images_set.all %} 
-                <img src="{{ image.image.url }}" />
+                {% for image in pic %} 
+                {% if image.title == p.title %}
+                <div class="col-md-3">
+                        <img src="/media/{{ image.image }}" class="img-thumbnail">
+                </div>
+                {%else%}
+                {%endif%}
                 {% endfor %}  
             </div>
             </a>{{ p.body }}<small style="float:right">{{ p.created }}</small>
         </div>
         <br>
     </div>
-    {% empty %}
-    <div class="container-fluid">
-        <h3>No Posts Found having search query "{{ request.GET.q }}"</h3>
-    </div>
 
     {% endfor %}
 </div>
 
-<ul class="pagination">
-    {% if posts.has_previous %}
-    <li class="page-item">
-        <a href="?page={{ posts.previous_page_number }}" class="page-link">&laquo;</a>
-    </li>
-    {% endif %} {% for p in posts.paginator.page_range %} {% if posts.number == p %}
-    <li class="page-item active">
-        <a href="?page={{ p }}" class="page-link">{{ p }}</a>
-    </li>
-    {% else %}
-    <li class="page-item">
-        <a href="?page={{ p }}" class="page-link">{{ p }}</a>
-    </li>
-    {% endif %} {% endfor %} {% if posts.has_next %}
-    <li class="page-item">
-        <a href="?page={{ posts.next_page_number }}" class="page-link">&raquo;</a>
-    </li>
-    {% endif %}
-</ul>
+<div class="row d-flex justify-content-center">
+    <ul class="pagination">
+        {% if posts.has_previous %}
+        <li class="page-item">
+            <a href="?page={{ posts.previous_page_number }}" class="page-link">&laquo;</a>
+        </li>
+        {% endif %} {% for p in posts.paginator.page_range %} {% if posts.number == p %}
+        <li class="page-item active">
+            <a href="?page={{ p }}" class="page-link">{{ p }}</a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a href="?page={{ p }}" class="page-link">{{ p }}</a>
+        </li>
+        {% endif %} {% endfor %} {% if posts.has_next %}
+        <li class="page-item">
+            <a href="?page={{ posts.next_page_number }}" class="page-link">&raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
 {% endblock %}

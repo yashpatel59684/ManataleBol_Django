@@ -55,13 +55,14 @@ class Images(models.Model):
     class Meta:
         ordering = ['-id']
     def __str__(self):
-        return str(self.post.id)
-    def get_absolute_pic(self):
-        return reverse("blog:post_list", args=[self.id])
+        return str(self.image)
     def __unicode__(self):
-        return self.title
+        return str(self.image)
+    def title(self):
+        return self.post.title
     def get_images(self):
         return self.images_set.all()
+
 class Comment(models.Model):
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)

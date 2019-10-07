@@ -11,12 +11,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.template.loader import render_to_string
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory,FileInput
 from django.contrib import messages
 @login_required(login_url="user_login")
 def post_list(request):
     post_list = Post.published.all()
-    pic=Images.objects.all().order_by('-post')
+    pic=Images.objects.all()
     query = request.GET.get('q')
     if query:
         post_list = Post.published.filter(
@@ -36,10 +36,12 @@ def post_list(request):
         'posts': posts,
         'pic':pic
     }
+    print(pic)
     return render(request, 'blog/post_list.html', context)
 @login_required(login_url="user_login")
 def post_create(request):
-    ImageFormset = modelformset_factory(Images, fields=('image',), extra=10)
+    ImageFormset = modelformset_factory(Images, fields=('image',),widgets={
+        'image':FileInput(attrs={'multiple':"true",'class':"form-control"})})
     if request.method == 'POST':
         form = PostCreateForm(request.POST)
         formset = ImageFormset(request.POST or None, request.FILES or None)
@@ -47,14 +49,10 @@ def post_create(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            print(formset.cleaned_data)
-            for f in formset:
-                print(f.cleaned_data)
-                try:
-                    photo = Images(post=post, image=f.cleaned_data.get('image'))
+            for fl in request.FILES.keys():
+                for f in request.FILES.getlist(fl):
+                    photo = Images(post=post, image=f)
                     photo.save()
-                except Exception as e:
-                    break
             messages.success(request, "Post has been successfully created.")
             return redirect('post_list')
     else:
@@ -70,11 +68,8 @@ def post_detail(request, id, slug):
     post = get_object_or_404(Post, id=id, slug=slug)
     comments = Comment.objects.filter(post=post, reply=None).order_by('-id')
     is_liked = False
-    is_favourite = False
     if post.likes.filter(id=request.user.id).exists():
         is_liked = True
-    if post.favourite.filter(id=request.user.id).exists():
-        is_favourite = True
     if request.method == 'POST':
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
@@ -91,7 +86,6 @@ def post_detail(request, id, slug):
     context = {
         'post': post,
         'is_liked': is_liked,
-        'is_favourite': is_favourite,
         'total_likes': post.total_likes(),
         'comments': comments,
         'comment_form': comment_form,
@@ -125,38 +119,22 @@ def like_post(request):
 @login_required(login_url="user_login")
 def post_edit(request, id):
     post = get_object_or_404(Post, id=id)
-    ImageFormset = modelformset_factory(Images, fields=('image',), extra=10)
+    ImageFormset = modelformset_factory(Images, fields=('image',),widgets={
+        'image':FileInput(attrs={'multiple':"true",'class':"form-control"})})
     if post.author != request.user:
         raise Http404()
     if request.method == "POST":
         form = PostEditForm(request.POST or None, instance=post)
-        formset = ImageFormset(request.POST or None, request.FILES or None)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid() :
             form.save()
-            print(formset.cleaned_data)
-            data = Images.objects.filter(post=post)
-            for index, f in enumerate(formset):
-                if f.cleaned_data:
-                    if f.cleaned_data['id'] is None:
-                        photo = Images(post=post, image=f.cleaned_data.get('image'))
-                        photo.save()
-                    elif f.cleaned_data['image'] is False:
-                        photo = Images.objects.get(id=request.POST.get('form-' + str(index) + '-id'))
-                        photo.delete()
-                    else:
-                        photo = Images(post=post, image=f.cleaned_data.get('image'))
-                        d = Images.objects.get(id=data[index].id)
-                        d.image = photo.image
-                        d.save()
             messages.success(request, "{} has been successfully updated!".format(post.title))
             return HttpResponseRedirect(post.get_absolute_url())
     else:
         form = PostEditForm(instance=post)
-        formset = ImageFormset(queryset=Images.objects.filter(post=post))
+
     context = {
     'form': form,
     'post': post,
-    'formset': formset,
     }
     return render(request, 'blog/post_edit.html', context)
 @login_required(login_url="user_login")
