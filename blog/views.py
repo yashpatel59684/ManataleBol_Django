@@ -36,7 +36,6 @@ def post_list(request):
         'posts': posts,
         'pic':pic
     }
-    print(pic)
     return render(request, 'blog/post_list.html', context)
 @login_required(login_url="user_login")
 def post_create(request):
@@ -131,7 +130,6 @@ def post_edit(request, id):
             return HttpResponseRedirect(post.get_absolute_url())
     else:
         form = PostEditForm(instance=post)
-
     context = {
     'form': form,
     'post': post,
