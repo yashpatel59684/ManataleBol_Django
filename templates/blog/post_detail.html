@@ -1,19 +1,14 @@
 {% extends 'blog/base.html' %} {% block title %}{{ post.title }} | {{ block.super }}{% endblock %} {% block content %} {% include 'blog/alerts.html' %}
-
-
-<h3>{{ post.title }}</h3>
-<small>Post created by: {{ post.author }}</small>
-<hr>
-<p>{{ post.body }}</p>
-
+<h3>Post by: {{ post.author }}</h3>
+<h4>{{ post.title }}</h4>
 <div class="row gallery">
     {% for p in post.images_set.all %} {% if p.image %}
     <div class="col-md-3">
-        <img src="{{ p.image.url }}" alt="Image Not Found" class="img-thumbnail">
+        <img src="{{ p.image.url }}" class="img-thumbnail">
     </div>
     {% endif %} {% endfor %}
 </div>
-
+<p>{{ post.body }}</p>
 <div id="like-section">
     {% include 'blog/like_section.html' %}
 </div>

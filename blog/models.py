@@ -14,7 +14,16 @@ class Post(models.Model):
     objects = models.Manager()      #Our default Manager
     published = PublishedManager()  #Our Custom Model Manager
     STATUS_CHOICES = (
-        ('published','Published'),
+        ('Happy','Happy'),
+        ('Sad','Sad'),
+        ('Alone','Alone'),
+        ('Loved','Loved'),
+        ('Broken','Broken'),
+        ('Exited','Exited'),
+        ('Motivate','Motivate'),
+        ('Crazy','Crazy'),
+        ('Superb','Superb'),
+        ('Cry','Cry'),
     )
     title               =       models.CharField(max_length=100)
     slug                =       models.SlugField(max_length=120)
@@ -23,7 +32,7 @@ class Post(models.Model):
     likes               =       models.ManyToManyField(User, related_name='likes', blank=True)
     created             =       models.DateTimeField(auto_now_add=True)
     updated             =       models.DateTimeField(auto_now=True)
-    status              =       models.CharField(max_length=10, choices=STATUS_CHOICES, default='published')
+    status              =       models.CharField(max_length=10, choices=STATUS_CHOICES, default='Happy')
     restrict_comment    =       models.BooleanField(default=False)
     favourite           =       models.ManyToManyField(User, related_name='favourite', blank=True)
     class Meta:

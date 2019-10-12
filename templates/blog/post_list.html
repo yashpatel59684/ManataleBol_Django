@@ -1,20 +1,28 @@
 {% extends 'blog/base.html' %} {% block title %}Welcome to {{ block.super }}{% endblock %} {% block content %} {% include 'blog/alerts.html' %}
 <div class="row d-flex justify-content-center">
-    {% for p in posts %}
-    <div class="col-md-8">
+    {% for post in posts %}
+    <div class="col-10 col-lg-10 col-md-10">
         <div class="img-thumbnail">
-            {{ p.author|capfirst }}&nbsp;&nbsp;&nbsp;<a href="{{ p.get_absolute_url }}">{{ p.title }}<br>
+            {{ post.author|capfirst }}&nbsp;&nbsp;&nbsp;Title:-<a href="{{ post.get_absolute_url }}"><i>{{ post.title }}</i><br>
                 <div class="row gallery">
                 {% for image in pic %} 
-                {% if image.title == p.title %}
-                <div class="col-md-3">
+                {% if image.title == post.title %}
+                <div class="col-3 col-lg-3 col-lg-3">
                         <img src="/media/{{ image.image }}" class="img-thumbnail">
                 </div>
                 {%else%}
                 {%endif%}
                 {% endfor %}  
             </div>
-            </a>{{ p.body }}<small style="float:right">{{ p.created }}</small>
+            </a><br> {{ total_likes }} Like{{ total_likes|pluralize }} {% if request.user.is_authenticated %}
+            <form action="{% url 'post_list' %}" method="post">
+                {% csrf_token %} {% if is_liked %}
+                <button type="submit" id="like" name="post_id" value="{{ post.id }}" class="btn btn-danger">Dislike</button> {% else %}
+                <button type="submit" id="like" name="post_id" value="{{ post.id }}" class="btn btn-primary">Like</button> {% endif %}
+            </form>
+            {% endif %}
+
+            <br>{{ post.body }}<small style="float:right">{{ post.created }}</small>
         </div>
         <br>
     </div>
