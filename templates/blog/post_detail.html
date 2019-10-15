@@ -1,4 +1,17 @@
 {% extends 'blog/base.html' %} {% block title %}{{ post.title }} | {{ block.super }}{% endblock %} {% block content %} {% include 'blog/alerts.html' %}
+<div class="section-1" style="float:right;">
+    {% if post.author.id is request.user.id %}
+    <a href="{% url 'blog:post_edit' id=post.id %}">
+        <i class="far fa-edit fa-2x" data-toggle="tooltip" data-placement="left" title="EDIT" style="color: chartreuse;"></i>
+    </a>
+    <a href="{% url 'blog:post_delete' id=post.id %}" id="delete">
+        <i style="color: crimson;" data-toggle="tooltip" data-placement="bottom" title="DELETE" class="far fa-trash-alt fa-2x"></i>
+    </a>
+    {%endif%}
+    <a href="{% url 'blog:report' reqid=request.user.id proid=post.author.id posid=post.id comid=0 %}">
+    <i class="fas fa-bug fa-2x" style="color:darkslategray" data-toggle="tooltip" data-placement="bottom" title="REPORT""></i> 
+   </a>
+</div>
 <h3>Post by: {{ post.author }}</h3>
 <h4>{{ post.title }}</h4>
 <div class="row gallery">
@@ -12,24 +25,8 @@
 <div id="like-section">
     {% include 'blog/like_section.html' %}
 </div>
-
-
-
-{% if post.author == request.user %}
-
-<div class="section-1" style="float:right;">
-
-    <a href="{% url 'blog:post_edit' id=post.id %}">
-        <button type="button" class="btn btn-outline-success">Edit</button>
-    </a>
-    <a href="{% url 'blog:post_delete' id=post.id %}" id="delete">
-        <button type="button" class="btn btn-danger">Delete</button>
-    </a>
-</div>
-{% endif %}
-<br><br>
-<hr> {% if not post.restrict_comment %}
-<div class="main-comment-section">
+{% if not post.restrict_comment %}
+<div class="main-comment-section ">
     {% include 'blog/comments.html' %}
 </div>
 {% endif %} {% endblock %}

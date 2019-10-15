@@ -16,7 +16,7 @@
 <body>
     {% include 'blog/navbar.html' %}
     <div class="">
-        <br>
+        <br><br><br>
         <div class="container-fluid ">
             {% block content %} {% endblock %}
         </div>
@@ -31,7 +31,7 @@
         <script type="text/javascript">
             $(document).ready(function(event) {
                 $('#delete').click(function() {
-                    return confirm("Are you sure to delete this post?");
+                    return confirm("Are you sure to delete this One?");
                 });
                 $('.reply-btn').click(function() {
                     $(this).parent().parent().next('.replied-comments').fadeToggle()
@@ -71,10 +71,10 @@
                         dataType: 'json',
                         success: function(response) {
                             $('.main-comment-section').html(response['form']);
-                            $('textarea').val('');
+                            $('#text').val('');
                             $('.reply-btn').click(function() {
                                 $(this).parent().parent().next('.replied-comments').fadeToggle();
-                                $('textarea').val('');
+                                $('#text').val('');
                             });
                         },
                         error: function(rs, e) {
@@ -92,10 +92,10 @@
                         dataType: 'json',
                         success: function(response) {
                             $('.main-comment-section').html(response['form']);
-                            $('textarea').val('');
+                            $('#text').val('');
                             $('.reply-btn').click(function() {
                                 $(this).parent().parent().next('.replied-comments').fadeToggle();
-                                $('textarea').val('');
+                                $('#text').val('');
                             });
                         },
                         error: function(rs, e) {

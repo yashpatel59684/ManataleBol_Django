@@ -15,11 +15,11 @@ from django.forms import modelformset_factory,FileInput
 from django.contrib import messages
 @login_required(login_url="user_login")
 def post_list(request):
-    post_list = Post.published.all()
+    post_list = Post.objects.all()
     pic=Images.objects.all()
     query = request.GET.get('q')
     if query:
-        post_list = Post.published.filter(
+        post_list = Post.objects.filter(
         Q(title__icontains=query)|
         Q(author__username=query)|
         Q(body__icontains=query)
@@ -32,11 +32,26 @@ def post_list(request):
         posts = paginator.page(1)
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
+    if page is None:
+        start_index = 0
+        end_index = 7
+    else:
+        (start_index, end_index) = proper_pagination(posts, index=4)
+    page_range = list(paginator.page_range)[start_index:end_index]
     context = {
         'posts': posts,
+        'page_range': page_range,
         'pic':pic
     }
     return render(request, 'blog/post_list.html', context)
+def proper_pagination(posts, index):
+    start_index = 0
+    end_index = 7
+    if posts.number > index:
+        start_index = posts.number - index
+        end_index = start_index + end_index
+    return (start_index, end_index)
+
 @login_required(login_url="user_login")
 def post_create(request):
     ImageFormset = modelformset_factory(Images, fields=('image',),widgets={
@@ -143,13 +158,38 @@ def post_delete(request, id):
     post.delete()
     messages.warning(request, 'post has been successfully deleted!')
     return redirect('post_list')
+
+@login_required(login_url="user_login")
+def cmnt_delete(request, id):
+    cmnt = get_object_or_404(Comment, id=id)
+    cmnt.delete()
+    messages.warning(request, 'comment has been successfully deleted!')
+    return redirect('post_list')
+
+@login_required(login_url="user_login")
+def report(request,reqid,proid,posid,comid):
+    if request.method == 'POST':
+        user_form = ReportForm(data=request.POST or None)
+        if user_form.is_valid():
+            reason = request.POST.get('reason')
+            body = request.POST.get('body')
+            report= Report.objects.create(req=reqid,user=proid,post=posid,cmnt=comid,reason=reason,body=body)
+            report.save()
+            messages.warning(request, 'Your report is sucesfully submitted')
+            return redirect('post_list')
+    else:
+        user_form = ReportForm(data=request.POST or None)
+    context = {
+        'user_form': user_form,
+    }
+    return render(request, 'blog/report.html', context)
+
 @login_required(login_url="user_login")
 def edit_profile(request):
     if request.method == 'POST':
         user_form = UserEditForm(data=request.POST or None, instance=request.user)
         profile_form = ProfileEditForm(data=request.POST or None, instance=request.user.profile, files=request.FILES)
         if user_form.is_valid() and profile_form.is_valid():
-            print(profile_form)
             user_form.save()
             profile_form.save()
             return HttpResponseRedirect(reverse("blog:edit_profile"))

@@ -3,26 +3,32 @@
     {% for post in posts %}
     <div class="col-10 col-lg-10 col-md-10">
         <div class="img-thumbnail">
-            {{ post.author|capfirst }}&nbsp;&nbsp;&nbsp;Title:-<a href="{{ post.get_absolute_url }}"><i>{{ post.title }}</i><br>
-                <div class="row gallery">
-                {% for image in pic %} 
-                {% if image.title == post.title %}
-                <div class="col-3 col-lg-3 col-lg-3">
-                        <img src="/media/{{ image.image }}" class="img-thumbnail">
-                </div>
-                {%else%}
-                {%endif%}
-                {% endfor %}  
+            {% if post.author.id is request.user.id %}
+            <div class="section-1" style="float:right;">
+                <a href="{% url 'blog:post_edit' id=post.id %}">
+                    <i class="far fa-2x fa-edit" data-toggle="tooltip" data-placement="left" title="EDIT" style="color: chartreuse;"></i>
+                </a>
+                <a href="{% url 'blog:post_delete' id=post.id %}" id="delete">
+                    <i style="color: crimson;" data-toggle="tooltip" data-placement="bottom" title="DELETE" class="far fa-2x fa-trash-alt"></i>
+                </a>
             </div>
-            </a><br> {{ total_likes }} Like{{ total_likes|pluralize }} {% if request.user.is_authenticated %}
-            <form action="{% url 'post_list' %}" method="post">
-                {% csrf_token %} {% if is_liked %}
-                <button type="submit" id="like" name="post_id" value="{{ post.id }}" class="btn btn-danger">Dislike</button> {% else %}
-                <button type="submit" id="like" name="post_id" value="{{ post.id }}" class="btn btn-primary">Like</button> {% endif %}
-            </form>
-            {% endif %}
-
-            <br>{{ post.body }}<small style="float:right">{{ post.created }}</small>
+            {%endif%} {% if post.author.profile.photo %}
+            <img src="/media/{{ post.author.profile.photo }}" alt="" height="35" width="35">&nbsp; {% else %}
+            <i class="fas fa-2x fa-user-circle"></i>&nbsp;{% endif %} {{ post.author|capfirst }}&nbsp;Was {{post.status|capfirst}} &nbsp;&nbsp;<br>Title:-<a href="{{ post.get_absolute_url }}"><i>{{ post.title }}</i>
+        <br>
+        <div class="row gallery">
+            {% for image in pic %} {% if image.title == post.title %}
+            <div class="col-3 col-lg-3 col-lg-3">
+                <img src="/media/{{ image.image }}" class="img-thumbnail">
+            </div>
+            {%else%} {%endif%} {% endfor %}
+        </div>
+        </a><b>{{ post.body }}</b>
+            <br>
+            <i class="fas fa-thumbs-up fa-1x red-text">&nbsp;{{ post.total_likes }}&nbsp;Like </i><small style="float:right">{{ post.created }}
+                    <a href="{% url 'blog:report' reqid=request.user.id proid=post.author.id posid=post.id comid=0 %}">
+                             <i class="fas fa-bug fa-2x" style="color:darkslategray" data-toggle="tooltip" data-placement="bottom" title="REPORT""></i> 
+                    </a></small>
         </div>
         <br>
     </div>
@@ -34,7 +40,7 @@
     <ul class="pagination">
         {% if posts.has_previous %}
         <li class="page-item">
-            <a href="?page={{ posts.previous_page_number }}" class="page-link">&laquo;</a>
+            <a href="?page={{ posts.previous_page_number }}" style="float:left" class="page-link">&laquo;</a>
         </li>
         {% endif %} {% for p in posts.paginator.page_range %} {% if posts.number == p %}
         <li class="page-item active">
@@ -46,7 +52,7 @@
         </li>
         {% endif %} {% endfor %} {% if posts.has_next %}
         <li class="page-item">
-            <a href="?page={{ posts.next_page_number }}" class="page-link">&raquo;</a>
+            <a href="?page={{ posts.next_page_number }}" style="float:right" class="page-link">&raquo;</a>
         </li>
         {% endif %}
     </ul>
