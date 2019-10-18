@@ -14,12 +14,24 @@
 </div>
 <h3>Post by: {{ post.author }}</h3>
 <h4>{{ post.title }}</h4>
-<div class="row gallery">
-    {% for p in post.images_set.all %} {% if p.image %}
-    <div class="col-md-3">
-        <img src="{{ p.image.url }}" class="img-thumbnail">
+<div class="row">
+    <div class="col-md-12">
+
+        <div id="mdb-lightbox-ui"></div>
+
+        <div class="mdb-lightbox">
+            <div class="row">
+                {% for p in post.images_set.all %} {% if p.image %}
+                <figure class="col-md-4">
+                    <a href="{{ p.image.url }}" data-size="1600x1067">
+                        <img src="{{ p.image.url }}" class="img-fluid" />
+                    </a>
+                </figure>
+                {% endif %} {% endfor %}
+            </div>
+        </div>
+
     </div>
-    {% endif %} {% endfor %}
 </div>
 <p>{{ post.body }}</p>
 <div id="like-section">

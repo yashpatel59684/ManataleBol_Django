@@ -29,6 +29,9 @@
         <!-- MDB core JavaScript -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/js/mdb.min.js"></script>
         <script type="text/javascript">
+            $(function() {
+                $("#mdb-lightbox-ui").load("mdb-addons/mdb-lightbox-ui.html");
+            });
             $(document).ready(function(event) {
                 $('#delete').click(function() {
                     return confirm("Are you sure to delete this One?");
